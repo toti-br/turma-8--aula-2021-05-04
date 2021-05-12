@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', main)
 
 function main() {
 
-    for (let i = 0; i < 4; i ++) {
+    for (let i = 0; i < 2; i ++) {
         fetch('https://thatcopy.pw/catapi/rest/')
         .then(tratarResposta)
         .then(tratarDados)
