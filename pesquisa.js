@@ -32,6 +32,7 @@ class Resultados {
         this.total = 0
         this.areaResultados = areaResultados
         this.listagemResultados = []
+
     }
 
     async requisicao(page = 1) {
@@ -52,8 +53,13 @@ class Resultados {
         this.listagemResultados = dados.docs
     }
 
-    exibirResultados(quantidade = 10, offset = 0 ) {
-        const listagem = this.listagemResultados.slice(offset, offset + quantidade)
+    exibirResultados(quantidade = 10, pagina = 0 ) {
+        this.numPaginas = Math.ceil(this.listagemResultados.length / 10)
+        this.paginaAtual = pagina
+
+        const listagem = this.listagemResultados.slice(
+            pagina * quantidade, pagina * quantidade + quantidade
+            )
         this.areaResultados.innerHTML = ""
         
         listagem.forEach(resultado => {
@@ -61,11 +67,31 @@ class Resultados {
         const card = criarCardLivro(resultado.title, urlCapa)
         this.areaResultados.append(card)
         })
+
+        this._exibirLinksPaginas()
     }
 
     _obterURLCapa(resultado) {
-        const tamanho = 'M' // S, M, L
+        const tamanho = 'L' // S, M, L
         return `${this.URL_CAPAS}${resultado.cover_i}-${tamanho}.jpg`
+    }
+
+    _exibirLinksPaginas() {
+        const linksContainer = document.querySelector('#links-paginas')
+        linksContainer.innerHTML = ""
+
+        for (let i=0; i < this.numPaginas; i++) {
+            const btn = document.createElement('button')
+            btn.classList.add('btn', 'btn-primary')
+            btn.textContent = i+1
+            // btn.dataset.numPagina = i.toString()
+            btn.onclick = () =>  { this.exibirResultados(this.numPaginas, i) }
+            if (this.paginaAtual === i) {
+                btn.disabled = true
+            }
+
+            linksContainer.append(btn)
+        }
     }
 
 
@@ -90,6 +116,6 @@ function criarCardLivro(titulo, capa) {
 
     cardBody.appendChild(tituloEl)
     card.append(img, cardBody)
-    console.log(card)
+    // console.log(card)
     return card
 }
